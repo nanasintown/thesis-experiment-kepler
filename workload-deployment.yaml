@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: workload
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-workload
+  namespace: workload
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: custom-workload
+  template:
+    metadata:
+      labels:
+        app: custom-workload
+    spec:
+      containers:
+      - name: custom-workload
+        image: nanacao/custom_workload:latest
+        ports:
+          - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: custom-workload-service
+spec:
+  selector:
+    app: custom-workload
+  ports:
+    - protocol: TCP
+      port: 80
+      # targetPort: 8080
+  type: LoadBalancer
